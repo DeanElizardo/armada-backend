@@ -3,7 +3,7 @@ build
 dist
 
 # Environmental Variables
-config/env.go
+src/config/env.go
 
 # Mac Specific Files
 .DS_Store
