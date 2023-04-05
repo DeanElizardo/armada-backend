@@ -1,24 +1,24 @@
-import { Router } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { TypedRequestBody } from '../index';
+import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
+import { TypedRequestBody } from "../index";
 import {
   createWorkspaceTemplate,
   deleteWorkspaceTemplate,
   getAllWorkspaceTemplates,
   IContainerSettings,
   IVolumes,
-} from '../services/templateService';
-import { baseTemplates } from '../utils/baseTemplates';
+} from "../service/templateService";
+import { baseTemplates } from "../utils/baseTemplates";
 const router = Router();
 
 /**
  * Get all task definitions
  */
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   const result = await getAllWorkspaceTemplates();
 
   res.status(StatusCodes.OK).json({
-    message: 'Success: Retrieved workspace templates',
+    message: "Success: Retrieved workspace templates",
     result,
   });
 });
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
  * Create a task definition (a template )
  */
 router.post(
-  '/',
+  "/",
   async (
     req: TypedRequestBody<{
       data: {
@@ -41,15 +41,15 @@ router.post(
     const { containerDefinition, family, volumes } = req.body.data;
 
     if (!containerDefinition) {
-      return res.status(400).send('A container definition is required.');
+      return res.status(400).send("A container definition is required.");
     }
 
     if (!family) {
-      return res.status(400).send('A task family is required.');
+      return res.status(400).send("A task family is required.");
     }
 
     if (!volumes) {
-      return res.status(400).send('A task volume is required.');
+      return res.status(400).send("A task volume is required.");
     }
 
     const result = await createWorkspaceTemplate(
@@ -59,7 +59,7 @@ router.post(
     );
 
     res.status(StatusCodes.CREATED).json({
-      message: 'Success: Created a new task definition',
+      message: "Success: Created a new task definition",
       result,
     });
   }
@@ -68,9 +68,9 @@ router.post(
 /**
  * Retrieve base templates.
  */
-router.get('/base', (req, res) => {
+router.get("/base", (req, res) => {
   res.status(StatusCodes.OK).json({
-    message: 'Success: Retrieved base templates',
+    message: "Success: Retrieved base templates",
     baseTemplates,
   });
 });
@@ -79,7 +79,7 @@ router.get('/base', (req, res) => {
  * Delete a workspace template
  */
 router.delete(
-  '/',
+  "/",
   async (
     req: TypedRequestBody<{
       taskDefinitionArn: string | undefined;
@@ -89,7 +89,7 @@ router.delete(
     const { taskDefinitionArn } = req.body;
 
     if (!taskDefinitionArn) {
-      return res.status(400).send('A task definition ARN is required.');
+      return res.status(400).send("A task definition ARN is required.");
     }
 
     const result = await deleteWorkspaceTemplate(taskDefinitionArn);

@@ -1,18 +1,18 @@
-import { Router } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { TypedRequestBody } from '../index';
-import database from '../services/databaseServices/index';
+import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
+import { TypedRequestBody } from "../index";
+import database from "../service/databaseServices/index";
 const router = Router();
 
 /**
  * Get all courses from postgres database
  */
-router.get('/all', async (req, res) => {
+router.get("/all", async (req, res) => {
   const courses = await database.courseActions.retrieveAllCourses();
   const cohorts = await database.cohortActions.retrieveAllCohorts();
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all courses.',
+    message: "Success: Fetched all courses.",
     result: {
       courses,
       cohorts,
@@ -24,7 +24,7 @@ router.get('/all', async (req, res) => {
  * Get all students for a specific course.
  */
 
-router.get('/:courseId', async (req, res) => {
+router.get("/:courseId", async (req, res) => {
   const { courseId } = req.params;
   const numberId = Number(courseId);
 
@@ -33,7 +33,7 @@ router.get('/:courseId', async (req, res) => {
     await database.courseActions.retrieveAllUsersFromSpecificCourse(numberId);
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all students for a specific course.',
+    message: "Success: Fetched all students for a specific course.",
     result: {
       course,
       students,
@@ -42,7 +42,7 @@ router.get('/:courseId', async (req, res) => {
 });
 
 router.post(
-  '/create',
+  "/create",
   async (
     req: TypedRequestBody<{
       data: {
@@ -57,13 +57,13 @@ router.post(
     if (!name) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A course name is required.');
+        .send("A course name is required.");
     }
 
     if (!cohortId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A cohort id is required.');
+        .send("A cohort id is required.");
     }
 
     const result = await database.courseActions.createCourse(name, cohortId);
@@ -76,7 +76,7 @@ router.post(
 );
 
 router.put(
-  '/:courseId',
+  "/:courseId",
   async (
     req: TypedRequestBody<{
       data: {
@@ -92,13 +92,13 @@ router.put(
     if (!numberId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid course id is required.');
+        .send("A valid course id is required.");
     }
 
     if (!name) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid course name is required.');
+        .send("A valid course name is required.");
     }
 
     const cohortDetails = {
@@ -117,7 +117,7 @@ router.put(
   }
 );
 
-router.delete('/:courseId', async (req, res) => {
+router.delete("/:courseId", async (req, res) => {
   const { courseId } = req.params;
   const numberId = Number(courseId);
 

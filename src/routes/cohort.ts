@@ -1,17 +1,17 @@
-import { Router } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { TypedRequestBody } from '../index';
-import database from '../services/databaseServices/index';
+import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
+import { TypedRequestBody } from "../index";
+import database from "../service/databaseServices/index";
 const router = Router();
 
 /**
  * Get all cohorts from postgres database
  */
-router.get('/all', async (req, res) => {
+router.get("/all", async (req, res) => {
   const cohorts = await database.cohortActions.retrieveAllCohorts();
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all cohorts.',
+    message: "Success: Fetched all cohorts.",
     result: cohorts,
   });
 });
@@ -20,7 +20,7 @@ router.get('/all', async (req, res) => {
  *  Create a Cohort
  */
 router.post(
-  '/create',
+  "/create",
   async (
     req: TypedRequestBody<{
       data: {
@@ -34,7 +34,7 @@ router.post(
     if (!name) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A cohort name is required.');
+        .send("A cohort name is required.");
     }
 
     const result = await database.cohortActions.createCohort(name);
@@ -50,7 +50,7 @@ router.post(
  *  Display all courses for a given cohort.
  */
 
-router.get('/:cohortId', async (req, res) => {
+router.get("/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
   const numberId = Number(cohortId);
 
@@ -61,7 +61,7 @@ router.get('/:cohortId', async (req, res) => {
   const cohort = await database.cohortActions.retrieveSpecificCohort(numberId);
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all courses for the given cohort.',
+    message: "Success: Fetched all courses for the given cohort.",
     result: {
       cohort,
       courses,
@@ -70,7 +70,7 @@ router.get('/:cohortId', async (req, res) => {
 });
 
 router.put(
-  '/:cohortId',
+  "/:cohortId",
   async (
     req: TypedRequestBody<{
       data: {
@@ -86,13 +86,13 @@ router.put(
     if (!numberId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid cohort id is required.');
+        .send("A valid cohort id is required.");
     }
 
     if (!name) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid cohort name is required.');
+        .send("A valid cohort name is required.");
     }
 
     const result = await database.cohortActions.updateCohort(numberId, name);
@@ -104,7 +104,7 @@ router.put(
   }
 );
 
-router.delete('/:cohortId', async (req, res) => {
+router.delete("/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
   const numberId = Number(cohortId);
 

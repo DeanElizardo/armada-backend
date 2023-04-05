@@ -1,4 +1,4 @@
-import { IContainerDefinition } from '../services/templateService';
+import { IContainerDefinition } from "../service/templateService";
 
 export interface IBaseTemplate {
   definition: IContainerDefinition;
@@ -10,87 +10,87 @@ export const coderServerOnly: IBaseTemplate = {
   definition: {
     containerDefinition: [
       {
-        name: 'nginx',
-        image: 'jdguillaume/nginx-armada',
+        name: "nginx",
+        image: "jdguillaume/nginx-armada",
         memory: 256,
         essential: true,
         portMappings: [
           {
             hostPort: 0,
             containerPort: 80,
-            protocol: 'tcp',
+            protocol: "tcp",
           },
         ],
-        links: ['code-server'],
+        links: ["code-server"],
       },
       {
-        name: 'code-server',
-        image: 'jdguillaume/base-code-server-no-auth',
+        name: "code-server",
+        image: "jdguillaume/base-code-server-no-auth",
         memory: 512,
         essential: true,
         mountPoints: [
           {
-            containerPath: '/home/coder',
+            containerPath: "/home/coder",
             sourceVolume: `coder`,
           },
         ],
       },
     ],
   },
-  name: 'codeServerOnly',
+  name: "codeServerOnly",
 };
 
 export const codeServerPG: IBaseTemplate = {
   definition: {
     containerDefinition: [
       {
-        name: 'nginx',
-        image: 'jdguillaume/nginx-armada',
+        name: "nginx",
+        image: "jdguillaume/nginx-armada",
         memory: 256,
         essential: true,
         portMappings: [
           {
             hostPort: 0,
             containerPort: 80,
-            protocol: 'tcp',
+            protocol: "tcp",
           },
         ],
-        links: ['code-server'],
+        links: ["code-server"],
       },
       {
-        name: 'code-server',
-        image: 'jdguillaume/base-code-server-no-auth',
+        name: "code-server",
+        image: "jdguillaume/base-code-server-no-auth",
         memory: 512,
         essential: true,
         mountPoints: [
           {
-            containerPath: '/home/coder',
+            containerPath: "/home/coder",
             sourceVolume: `coder`,
           },
         ],
       },
       {
-        name: 'postgres',
-        image: 'postgres',
+        name: "postgres",
+        image: "postgres",
         memory: 512,
         essential: true,
         portMappings: [
           {
             containerPort: 3000,
             hostPort: 0,
-            protocol: 'tcp',
+            protocol: "tcp",
           },
         ],
         mountPoints: [
           {
-            containerPath: '/home/postgres',
-            sourceVolume: 'postgres',
+            containerPath: "/home/postgres",
+            sourceVolume: "postgres",
           },
         ],
       },
     ],
   },
-  name: 'codeServerPG',
+  name: "codeServerPG",
 };
 
 export const baseTemplates = [coderServerOnly, codeServerPG];

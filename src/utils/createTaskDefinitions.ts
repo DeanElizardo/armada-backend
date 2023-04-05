@@ -1,12 +1,12 @@
-import clone from 'just-clone';
-import { retrieveFileSystemId } from '../clients/efsClient';
+import clone from "just-clone";
+import { retrieveFileSystemId } from "../clients/efsClient";
 
-import { createEFSFolders } from '../clients/lambdaClient';
+import { createEFSFolders } from "../clients/lambdaClient";
 import {
   createWorkspaceTemplate,
   IContainerDefinition,
   IVolumes,
-} from './../services/templateService';
+} from "../service/templateService";
 
 interface ITaskResult {
   family: string;
@@ -30,7 +30,7 @@ function extractFolderNames(
 ): string[] {
   const volumes: string[] = [];
 
-  containerDefinitions.containerDefinition.forEach(definition => {
+  containerDefinitions.containerDefinition.forEach((definition) => {
     const retrievedMountPoint = definition.mountPoints?.[0].sourceVolume;
 
     if (retrievedMountPoint !== undefined) volumes.push(retrievedMountPoint);
@@ -44,10 +44,10 @@ function createVolumeEntries(taskName: string, folders: string[]): IVolumes[] {
   const volumes: IVolumes[] = [];
 
   if (!fileSystemId) {
-    throw new Error('No file system ID was provided.');
+    throw new Error("No file system ID was provided.");
   }
 
-  folders.forEach(folder => {
+  folders.forEach((folder) => {
     volumes.push({
       efsVolumeConfiguration: {
         fileSystemId,
@@ -109,7 +109,7 @@ export async function createStudentTaskDefinition(
 
   const task = await sendRequest(baseTask);
 
-  folders.forEach(async folder => {
+  folders.forEach(async (folder) => {
     await createEFSFolders(`/${taskName}/${folder}`);
   });
 
@@ -117,7 +117,7 @@ export async function createStudentTaskDefinition(
   const family = task?.taskDefinition?.family;
 
   if (revision === undefined || family === undefined) {
-    throw new Error('Task Definition Not found.');
+    throw new Error("Task Definition Not found.");
   }
 
   return { revision, family };
@@ -125,11 +125,11 @@ export async function createStudentTaskDefinition(
 
 async function sendRequest(baseTask: IContainerDefinition) {
   if (!baseTask.family) {
-    throw new Error('The family task provided is incorrect.');
+    throw new Error("The family task provided is incorrect.");
   }
 
   if (!baseTask.volumes) {
-    throw new Error('The defined volume is incorrect.');
+    throw new Error("The defined volume is incorrect.");
   }
 
   const response = await createWorkspaceTemplate(

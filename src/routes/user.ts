@@ -1,20 +1,20 @@
-import { Router } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { TypedRequestBody } from '../index';
-import { createUser } from '../services/userCreationService';
-import database from '../services/databaseServices/index';
-import { IUserUpdates } from '../services/databaseServices/userActions';
-import { User_Cohort, User_Course } from '@prisma/client';
+import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
+import { TypedRequestBody } from "../index";
+import { createUser } from "../service/userCreationService";
+import database from "../service/databaseServices/index";
+import { IUserUpdates } from "../service/databaseServices/userActions";
+import { User_Cohort, User_Course } from "@prisma/client";
 
 const router = Router();
 
 // Create User
 router.post(
-  '/create',
+  "/create",
   async (
     req: TypedRequestBody<{
       data: {
-        userType: 'admin' | 'student' | undefined;
+        userType: "admin" | "student" | undefined;
         username: string | undefined;
         firstName: string | undefined;
         lastName: string | undefined;
@@ -28,31 +28,31 @@ router.post(
     if (!username) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid username is required.');
+        .send("A valid username is required.");
     }
 
     if (!userType) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid userType is required.');
+        .send("A valid userType is required.");
     }
 
     if (!firstName) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid firstName is required.');
+        .send("A valid firstName is required.");
     }
 
     if (!lastName) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid lastName is required.');
+        .send("A valid lastName is required.");
     }
 
     if (!email) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid email is required.');
+        .send("A valid email is required.");
     }
 
     const result = await createUser(
@@ -64,7 +64,7 @@ router.post(
     );
 
     res.status(StatusCodes.OK).json({
-      message: 'Success: Created a user!',
+      message: "Success: Created a user!",
       result,
     });
   }
@@ -73,11 +73,11 @@ router.post(
 /**
  * Get all users from postgres database
  */
-router.get('/all', async (req, res) => {
+router.get("/all", async (req, res) => {
   const users = await database.userActions.retrieveAllUsers();
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all users',
+    message: "Success: Fetched all users",
     result: users,
   });
 });
@@ -85,11 +85,11 @@ router.get('/all', async (req, res) => {
 /**
  * Get all admin users from postgres database
  */
-router.get('/allAdmins', async (req, res) => {
+router.get("/allAdmins", async (req, res) => {
   const users = await database.userActions.retrieveAllAdmins();
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all admin users.',
+    message: "Success: Fetched all admin users.",
     result: users,
   });
 });
@@ -97,11 +97,11 @@ router.get('/allAdmins', async (req, res) => {
 /**
  * Get all students from postgres database
  */
-router.get('/allStudents', async (req, res) => {
+router.get("/allStudents", async (req, res) => {
   const users = await database.userActions.retrieveAllStudents();
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all student users.',
+    message: "Success: Fetched all student users.",
     result: users,
   });
 });
@@ -109,13 +109,13 @@ router.get('/allStudents', async (req, res) => {
 /**
  * Get all students in a specific cohort.
  */
-router.get('/allStudentsInCohort/:cohortId', async (req, res) => {
+router.get("/allStudentsInCohort/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
 
   if (!cohortId) {
     return res
       .status(StatusCodes.NOT_FOUND)
-      .send('The requested cohort could not be found.');
+      .send("The requested cohort could not be found.");
   }
 
   const users = await database.userActions.retrieveAllStudentsInCohort(
@@ -123,7 +123,7 @@ router.get('/allStudentsInCohort/:cohortId', async (req, res) => {
   );
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all student users.',
+    message: "Success: Fetched all student users.",
     result: users,
   });
 });
@@ -131,13 +131,13 @@ router.get('/allStudentsInCohort/:cohortId', async (req, res) => {
 /**
  * Get all students not in cohort.
  */
-router.get('/allStudentsNotInCohort/:cohortId', async (req, res) => {
+router.get("/allStudentsNotInCohort/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
 
   if (!cohortId) {
     return res
       .status(StatusCodes.NOT_FOUND)
-      .send('The user you requested could not be found.');
+      .send("The user you requested could not be found.");
   }
 
   const users = await database.userActions.retrieveAllStudentsNotInCohort(
@@ -145,7 +145,7 @@ router.get('/allStudentsNotInCohort/:cohortId', async (req, res) => {
   );
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all student users.',
+    message: "Success: Fetched all student users.",
     result: users,
   });
 });
@@ -153,19 +153,19 @@ router.get('/allStudentsNotInCohort/:cohortId', async (req, res) => {
 /**
  * Get all students from cohort that are not in the current course.
  */
-router.get('/allStudentsNotInCourse/:cohortId/:courseId', async (req, res) => {
+router.get("/allStudentsNotInCourse/:cohortId/:courseId", async (req, res) => {
   const { courseId, cohortId } = req.params;
 
   if (!courseId) {
     return res
       .status(StatusCodes.NOT_FOUND)
-      .send('The course you requested could not be found.');
+      .send("The course you requested could not be found.");
   }
 
   if (!cohortId) {
     return res
       .status(StatusCodes.NOT_FOUND)
-      .send('The cohort you requested could not be found.');
+      .send("The cohort you requested could not be found.");
   }
 
   const users =
@@ -175,7 +175,7 @@ router.get('/allStudentsNotInCourse/:cohortId/:courseId', async (req, res) => {
     );
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all student users.',
+    message: "Success: Fetched all student users.",
     result: users,
   });
 });
@@ -183,13 +183,13 @@ router.get('/allStudentsNotInCourse/:cohortId/:courseId', async (req, res) => {
 /**
  * Get all students who don't have a workspace for a given course.
  */
-router.get('/allStudentsWithoutWorkspaces/:courseId', async (req, res) => {
+router.get("/allStudentsWithoutWorkspaces/:courseId", async (req, res) => {
   const { courseId } = req.params;
 
   if (!courseId) {
     return res
       .status(StatusCodes.NOT_FOUND)
-      .send('The requested course could not be found.');
+      .send("The requested course could not be found.");
   }
 
   const users =
@@ -198,7 +198,7 @@ router.get('/allStudentsWithoutWorkspaces/:courseId', async (req, res) => {
     );
 
   res.status(StatusCodes.OK).send({
-    message: 'Success: Fetched all student users.',
+    message: "Success: Fetched all student users.",
     result: users,
   });
 });
@@ -206,7 +206,7 @@ router.get('/allStudentsWithoutWorkspaces/:courseId', async (req, res) => {
 /**
  * Delete User
  */
-router.delete('/delete/:uuid', async (req, res) => {
+router.delete("/delete/:uuid", async (req, res) => {
   const { uuid } = req.params;
   await database.userActions.deleteUser(uuid);
 
@@ -218,13 +218,13 @@ router.delete('/delete/:uuid', async (req, res) => {
 /**
  * Retrieve Specified User
  */
-router.get('/:username', async (req, res) => {
+router.get("/:username", async (req, res) => {
   const { username } = req.params;
 
   if (!username) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .send('A valid username is required.');
+      .send("A valid username is required.");
   }
 
   const user = await database.userActions.retrieveSpecificUser(username);
@@ -232,7 +232,7 @@ router.get('/:username', async (req, res) => {
   if (!user) {
     return res
       .status(StatusCodes.NOT_FOUND)
-      .send('The user you requested could not be found.');
+      .send("The user you requested could not be found.");
   }
 
   res.status(StatusCodes.OK).send({
@@ -245,7 +245,7 @@ router.get('/:username', async (req, res) => {
  * Update a user
  */
 router.put(
-  '/',
+  "/",
   async (
     req: TypedRequestBody<{
       data: {
@@ -264,7 +264,7 @@ router.put(
     if (!data.uuid) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid user id is required.');
+        .send("A valid user id is required.");
     }
 
     const userDetails: IUserUpdates = {
@@ -290,7 +290,7 @@ router.put(
  * Add A specific user to cohort
  */
 router.post(
-  '/addToCohort',
+  "/addToCohort",
   async (
     req: TypedRequestBody<{
       data: {
@@ -305,13 +305,13 @@ router.post(
     if (!userId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid user id is required.');
+        .send("A valid user id is required.");
     }
 
     if (!cohortId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid cohort id is required.');
+        .send("A valid cohort id is required.");
     }
 
     const relationship = await database.userActions.addUserToCohort(
@@ -330,7 +330,7 @@ router.post(
  * Add multiple users to a cohort
  */
 router.post(
-  '/addUsersToCohort',
+  "/addUsersToCohort",
   async (
     req: TypedRequestBody<{
       data: User_Cohort[] | undefined;
@@ -342,7 +342,7 @@ router.post(
     if (!data) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid user id is required.');
+        .send("A valid user id is required.");
     }
 
     const relationship = await database.userActions.addUsersToCohort(data);
@@ -358,7 +358,7 @@ router.post(
  * Add user to a course
  */
 router.post(
-  '/addUserToCourse',
+  "/addUserToCourse",
   async (
     req: TypedRequestBody<{
       data: {
@@ -373,13 +373,13 @@ router.post(
     if (!userId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid user id is required.');
+        .send("A valid user id is required.");
     }
 
     if (!courseId) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid cohort id is required.');
+        .send("A valid cohort id is required.");
     }
 
     const relationship = await database.userActions.addUserToCourse({
@@ -399,7 +399,7 @@ router.post(
  */
 
 router.post(
-  '/addUsersToCourse',
+  "/addUsersToCourse",
   async (
     req: TypedRequestBody<{
       data: User_Course[] | undefined;
@@ -411,7 +411,7 @@ router.post(
     if (!data) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send('A valid user id is required.');
+        .send("A valid user id is required.");
     }
 
     const relationship = await database.userActions.addUsersToCourse(data);
