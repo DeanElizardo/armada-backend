@@ -15,13 +15,13 @@ func CreateCohortRecord(cohortName string) ([]CohortRecord, error) {
 	}
 	defer db.Close()
 
-	sqlStatement := `INSERT INTO cohort (name) VALUES ($1) RETURNING id`
+	sqlStatement := `INSERT INTO cohorts (name) VALUES ($1) RETURNING id`
 	err = db.QueryRow(sqlStatement, cohortName).Scan(&id)
 	if err != nil {
 		return cohortRecord, err
 	}
 
-	sqlStatement = `SELECT * FROM cohort WHERE id=$1`
+	sqlStatement = `SELECT * FROM cohorts WHERE id=$1`
 	row, err := db.Query(sqlStatement, id)
 	if err != nil {
 		return cohortRecord, err
@@ -49,7 +49,7 @@ func GetAllCohortRecords() ([]CohortRecord, error) {
 	}
 	defer db.Close()
 
-	sqlStatement := `SELECT * FROM cohort`
+	sqlStatement := `SELECT * FROM cohorts`
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
 		return cohortRecords, err
@@ -78,7 +78,7 @@ func GetSingleCohort(id int) ([]CohortRecord, error) {
 	}
 	defer db.Close()
 
-	sqlStatement := `SELECT * FROM cohort WHERE id=$1`
+	sqlStatement := `SELECT * FROM cohorts WHERE id=$1`
 	row, err := db.Query(sqlStatement, id)
 	if err != nil {
 		return cohortRecord, err
@@ -108,7 +108,7 @@ func UpdateCohort(id int, name string) ([]CohortRecord, error) {
 	}
 	defer db.Close()
 
-	sqlStatement := `UPDATE cohort SET name=$2 WHERE id=$1 RETURNING id, name`
+	sqlStatement := `UPDATE cohorts SET name=$2 WHERE id=$1 RETURNING id, name`
 	var updatedID int
 	var updatedName string
 	err = db.QueryRow(sqlStatement, id, name).Scan(&updatedID, &updatedName)
@@ -134,7 +134,7 @@ func DeleteCohort(id int) (int64, error) {
 	}
 	defer db.Close()
 
-	sqlStatement := `DELETE FROM cohort WHERE id=$1`
+	sqlStatement := `DELETE FROM cohorts WHERE id=$1`
 	response, err := db.Exec(sqlStatement, id)
 	if err != nil {
 		return deleteCount, err
