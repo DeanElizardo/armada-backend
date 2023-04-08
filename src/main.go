@@ -12,10 +12,10 @@ import (
 
 func main() {
 	ctx := context.Background()
-	mux := routers.InitRouter()
+	router := http.HandlerFunc(routers.Serve)
 	server := &http.Server{
 		Addr:    ":3000",
-		Handler: mux,
+		Handler: router,
 		BaseContext: func(l net.Listener) context.Context {
 			//modify context for the server here
 			return ctx

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type cohortWBody struct {
@@ -20,20 +21,19 @@ type cohortRBody struct {
 
 // Create
 func cohortCreate(w http.ResponseWriter, r *http.Request) {
+	// New cohort name is sent in the request body
 	var rBody cohortRBody
 	err := json.NewDecoder(r.Body).Decode(&rBody)
 	if err != nil {
 		sys.Log.Errorf("cohortCreate: failed to read request body: %s", err)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(nil)
+		http.Error(w, "400 bad request", http.StatusBadRequest)
 		return
 	}
 
 	cohort, err := db.CreateCohortRecord(rBody.Name)
 	if err != nil {
 		sys.Log.Errorf("cohortCreate: failed to create new cohort: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		http.Error(w, "500 internal server error", http.StatusBadRequest)
 		return
 	}
 	sys.Log.Infof("successfully created cohort (id=%d, name=%s)", cohort[0].ID, cohort[0].Name)
@@ -45,6 +45,7 @@ func cohortCreate(w http.ResponseWriter, r *http.Request) {
 	wBody, err := json.Marshal(data)
 	if err != nil {
 		sys.Log.Errorf("cohortCreate: failed to marshal data: %s", err)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 	}
 
 	w.Write(wBody)
@@ -55,8 +56,7 @@ func cohortGetAll(w http.ResponseWriter, r *http.Request) {
 	cohorts, err := db.GetAllCohortRecords()
 	if err != nil {
 		sys.Log.Errorf("cohortGetAll: failed to get all cohorts: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		return
 	}
 	sys.Log.Info("successfully fetched all cohorts")
@@ -68,8 +68,7 @@ func cohortGetAll(w http.ResponseWriter, r *http.Request) {
 	wBody, err := json.Marshal(data)
 	if err != nil {
 		sys.Log.Errorf("cohortGetAll: failed to marshal data: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		return
 	}
 
@@ -77,23 +76,19 @@ func cohortGetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func cohortGetSingle(w http.ResponseWriter, r *http.Request) {
-	var rBody cohortRBody
-	err := json.NewDecoder(r.Body).Decode(&rBody)
+	id, err := strconv.Atoi(getField(r, 0))
 	if err != nil {
-		sys.Log.Errorf("cohortGetSingle: failed to read requst body: %s", err)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(nil)
-		return
+		sys.Log.Errorf("cohortGetSingle: unable to parse cohort id param: %s", err)
+		http.Error(w, "400 bad request", http.StatusBadRequest)
 	}
 
-	cohort, err := db.GetSingleCohort(rBody.ID)
+	cohort, err := db.GetSingleCohort(id)
 	if err != nil {
 		sys.Log.Errorf("cohortGetSingle: failed to get cohort: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		return
 	}
-	sys.Log.Infof("successfully fetched single cohort (id=%d)", rBody.ID)
+	sys.Log.Infof("successfully fetched single cohort (id=%d)", id)
 
 	data := cohortWBody{
 		Message: "success: fetched single cohort",
@@ -102,8 +97,7 @@ func cohortGetSingle(w http.ResponseWriter, r *http.Request) {
 	wBody, err := json.Marshal(data)
 	if err != nil {
 		sys.Log.Errorf("cohortGetSingle: unable to marshal data: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		return
 	}
 
@@ -116,16 +110,14 @@ func cohortUpdate(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&rBody)
 	if err != nil {
 		sys.Log.Errorf("cohortUpdate: failed to read request body: %s", err)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(nil)
+		http.Error(w, "400 bad request", http.StatusBadRequest)
 		return
 	}
 
 	cohort, err := db.UpdateCohort(rBody.ID, rBody.Name)
 	if err != nil {
 		sys.Log.Errorf("cohortUpdate: failed to update cohort '%s %s': %s", rBody.ID, rBody.Name, err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		return
 	}
 	sys.Log.Infof("successfully updated cohort (id=%s)", rBody.ID)
@@ -137,8 +129,7 @@ func cohortUpdate(w http.ResponseWriter, r *http.Request) {
 	wBody, err := json.Marshal(data)
 	if err != nil {
 		sys.Log.Errorf("cohortUpdate: failed to marshal data: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		return
 	}
 
@@ -147,26 +138,23 @@ func cohortUpdate(w http.ResponseWriter, r *http.Request) {
 
 // Delete
 func cohortDelete(w http.ResponseWriter, r *http.Request) {
-	var rBody cohortRBody
-	err := json.NewDecoder(r.Body).Decode(&rBody)
+	id, err := strconv.Atoi(getField(r, 0))
 	if err != nil {
-		sys.Log.Errorf("cohortDelete: failed to read request body: %s", err)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(nil)
+		sys.Log.Errorf("cohortDelete: failed to parse id from request params: %s", err)
+		http.Error(w, "400 bad request", http.StatusBadRequest)
 		return
 	}
 
-	deleteCount, err := db.DeleteCohort(rBody.ID)
+	deleteCount, err := db.DeleteCohort(id)
 	if err != nil {
-		sys.Log.Errorf("cohortDelete: failed to delete cohort '%s %s': %s", rBody.ID, rBody.Name, err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		sys.Log.Errorf("cohortDelete: failed to delete cohort '%s': %s", id, err)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		return
 	}
 	if deleteCount != 0 {
-		sys.Log.Infof("successfully deleted cohort (id=%s)", rBody.ID)
+		sys.Log.Infof("successfully deleted cohort (id=%s)", id)
 	} else {
-		sys.Log.Info("completed deletion action; no records with id=%s removed; possible record D.N.E.", rBody.ID)
+		sys.Log.Info("completed deletion action; no records with id=%s removed; possible record D.N.E.", id)
 	}
 
 	data := cohortWBody{
@@ -176,8 +164,7 @@ func cohortDelete(w http.ResponseWriter, r *http.Request) {
 	wBody, err := json.Marshal(data)
 	if err != nil {
 		sys.Log.Errorf("cohortDelete: unable to marshal data: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		return
 	}
 
