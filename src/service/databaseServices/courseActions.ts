@@ -45,7 +45,7 @@ export async function retrieveAllCoursesFromCohort(cohortId: number) {
   return courses;
 }
 
-// Get All Users from a Specific Course //TODO
+// Get All Users from a Specific Course //!REFACTORED
 export async function retrieveAllUsersFromSpecificCourse(courseId: number) {
   const users = await prisma.user_Course.findMany({
     where: { courseId },
@@ -77,7 +77,7 @@ export async function retrieveSpecificCourse(id: number) {
   return course;
 }
 
-// Update a Course //TODO
+// Update a Course //!REFACTORED
 export async function updateCourse(id: number, courseDetails: ICourseDetails) {
   const updateCourse = await prisma.course.update({
     where: { id },
