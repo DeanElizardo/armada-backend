@@ -49,6 +49,7 @@ func cohortCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(wBody)
+	return
 }
 
 // Read
@@ -73,6 +74,7 @@ func cohortGetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(wBody)
+	return
 }
 
 func cohortGetSingle(w http.ResponseWriter, r *http.Request) {
@@ -102,6 +104,7 @@ func cohortGetSingle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(wBody)
+	return
 }
 
 // Update
@@ -134,6 +137,7 @@ func cohortUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(wBody)
+	return
 }
 
 // Delete
@@ -169,4 +173,5 @@ func cohortDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(wBody)
+	return
 }
