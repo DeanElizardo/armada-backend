@@ -7,13 +7,23 @@ import (
 	"strings"
 )
 
-var routes = []route{
+var routes = append(cohortRoutes, courseRoutes...)
+
+var cohortRoutes = []route{
 	newRoute("POST", "/cohort/create", cohortCreate),
 	newRoute("GET", "/cohort/all", cohortGetAll),
 	newRoute("GET", "/cohort/([0-9]+)", cohortGetSingle),
 	newRoute("GET", "/cohort/([0-9]+)/courses", coursesGetForCohort),
 	newRoute("PUT", "/cohort/([0-9]+)/update", cohortUpdate),
 	newRoute("DELETE", "/cohort/([0-9]+)/delete", cohortDelete),
+}
+
+var courseRoutes = []route{
+	newRoute("POST", "/course/create", coursesCreate),
+	newRoute("GET", "/course/all", coursesGetAll),
+	newRoute("GET", "/course/([0-9]+)/users", coursesGetUsers),
+	newRoute("PUT", "/course/([0-9]+)/update", coursesUpdate),
+	newRoute("DELETE", "/course/([0-9]+)/delete", coursesDelete),
 }
 
 type route struct {

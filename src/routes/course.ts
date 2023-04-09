@@ -7,6 +7,8 @@ const router = Router();
 /**
  * Get all courses from postgres database
  */
+//!REFACTORED AND IN ROUTER
+//!ALERT: SUPER WEIRD THAT THIS RETURNS ALL COHORTS AND COURSES. NECESSARY?
 router.get("/all", async (req, res) => {
   const courses = await database.courseActions.retrieveAllCourses();
   const cohorts = await database.cohortActions.retrieveAllCohorts();
@@ -23,7 +25,7 @@ router.get("/all", async (req, res) => {
 /**
  * Get all students for a specific course.
  */
-
+//!REFACTORED AND IN ROUTER
 router.get("/:courseId", async (req, res) => {
   const { courseId } = req.params;
   const numberId = Number(courseId);
@@ -41,6 +43,7 @@ router.get("/:courseId", async (req, res) => {
   });
 });
 
+//!REFCTORED AND IN ROUTER
 router.post(
   "/create",
   async (
@@ -75,6 +78,7 @@ router.post(
   }
 );
 
+//!REFACTORED AND IN ROUTER
 router.put(
   "/:courseId",
   async (
