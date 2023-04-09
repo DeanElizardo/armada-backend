@@ -1,11 +1,11 @@
-import { prisma } from './index';
-import { Course } from '@prisma/client';
+import { prisma } from "./index";
+import { Course } from "@prisma/client";
 
 interface ICourseDetails {
   name: string;
 }
 
-// Create a Course
+// Create a Course //!REFACTORED
 async function createCourse(name: string, cohortId: number) {
   const course = await prisma.course.create({
     data: {
@@ -17,7 +17,7 @@ async function createCourse(name: string, cohortId: number) {
   return course;
 }
 
-// Delete a Course
+// Delete a Course //!REFACTORED
 export async function deleteCourse(id: number) {
   const course = await prisma.course.delete({
     where: { id },
@@ -26,7 +26,7 @@ export async function deleteCourse(id: number) {
   return course;
 }
 
-// Get All Courses
+// Get All Courses //!REFACTORED
 export async function retrieveAllCourses() {
   const courses = await prisma.course.findMany({
     include: {
@@ -36,7 +36,7 @@ export async function retrieveAllCourses() {
   return courses;
 }
 
-// Get All Courses from a Specific Cohort
+// Get All Courses from a Specific Cohort //!REFACTORED
 export async function retrieveAllCoursesFromCohort(cohortId: number) {
   const courses = await prisma.course.findMany({
     where: { cohortId },
@@ -45,7 +45,7 @@ export async function retrieveAllCoursesFromCohort(cohortId: number) {
   return courses;
 }
 
-// Get All Users from a Specific Course
+// Get All Users from a Specific Course //TODO
 export async function retrieveAllUsersFromSpecificCourse(courseId: number) {
   const users = await prisma.user_Course.findMany({
     where: { courseId },
@@ -57,7 +57,7 @@ export async function retrieveAllUsersFromSpecificCourse(courseId: number) {
   return users;
 }
 
-// Get Courses from List
+// Get Courses from List //! NEVER USED; DO NOT REFACTOR
 export async function retrieveCoursesFromList(list: number[]) {
   const cohorts = await prisma.course.findMany({
     where: {
@@ -68,7 +68,7 @@ export async function retrieveCoursesFromList(list: number[]) {
   return cohorts;
 }
 
-// Get a Specific Course
+// Get a Specific Course //!REFACTORED
 export async function retrieveSpecificCourse(id: number) {
   const course = await prisma.course.findUnique({
     where: { id },
@@ -77,7 +77,7 @@ export async function retrieveSpecificCourse(id: number) {
   return course;
 }
 
-// Update a Course
+// Update a Course //TODO
 export async function updateCourse(id: number, courseDetails: ICourseDetails) {
   const updateCourse = await prisma.course.update({
     where: { id },

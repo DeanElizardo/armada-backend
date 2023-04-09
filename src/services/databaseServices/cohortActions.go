@@ -125,7 +125,7 @@ func UpdateCohort(id int, name string) ([]CohortRecord, error) {
 	return cohortRecord, nil
 }
 
-// Delete
+// Delete //!REFACTORED
 func DeleteCohort(id int) (int64, error) {
 	var deleteCount int64
 	db, err := connectDB()
