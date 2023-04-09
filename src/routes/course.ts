@@ -121,6 +121,7 @@ router.put(
   }
 );
 
+//!REFACTORED
 router.delete("/:courseId", async (req, res) => {
   const { courseId } = req.params;
   const numberId = Number(courseId);
